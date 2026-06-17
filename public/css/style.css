@@ -1,0 +1,210 @@
+:root {
+    --app-primary: #111827;
+    --app-primary-hover: #030712;
+    --app-bg: #f8fafc;
+    --app-card-bg: #ffffff;
+    --app-border: #e5e7eb;
+    --app-muted: #64748b;
+    --app-heading: #111827;
+    --app-radius: 1.25rem;
+    --app-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family:
+        "Inter",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    background: var(--app-bg);
+    color: var(--app-heading);
+}
+
+.public-site-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.public-main {
+    flex: 1;
+}
+
+.public-navbar {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--app-border);
+}
+
+.public-navbar .navbar {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.public-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+.public-brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: var(--app-primary);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.public-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.public-brand-name {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--app-heading);
+    line-height: 1;
+}
+
+.public-brand-subtitle {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--app-muted);
+}
+
+.public-nav-links {
+    gap: 0.5rem;
+}
+
+.public-nav-links .nav-link {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--app-muted);
+}
+
+.public-nav-links .nav-link:hover,
+.public-nav-links .nav-link.active {
+    color: var(--app-heading);
+}
+
+.public-navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-app-primary {
+    background: var(--app-primary);
+    color: #ffffff;
+    border: 1px solid var(--app-primary);
+    border-radius: 999px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.925rem;
+    font-weight: 700;
+}
+
+.btn-app-primary:hover {
+    background: var(--app-primary-hover);
+    color: #ffffff;
+    border-color: var(--app-primary-hover);
+}
+
+.btn-app-link {
+    color: var(--app-heading);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-app-link:hover {
+    color: var(--app-primary-hover);
+}
+
+.public-alert-container {
+    margin-top: 1.5rem;
+}
+
+.alert-title {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.alert-list {
+    margin-bottom: 0;
+    padding-left: 1.25rem;
+}
+
+.public-footer {
+    margin-top: auto;
+    padding: 1.5rem 0;
+    background: #ffffff;
+    border-top: 1px solid var(--app-border);
+}
+
+.public-footer-copy {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    color: var(--app-muted);
+}
+
+.public-footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.public-footer-links a {
+    color: var(--app-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.public-footer-links a:hover {
+    color: var(--app-heading);
+}
+
+.page-section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+.card-soft {
+    background: var(--app-card-bg);
+    border: 1px solid var(--app-border);
+    border-radius: var(--app-radius);
+    box-shadow: var(--app-shadow);
+}
+
+@media (min-width: 768px) {
+    .public-footer-links {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .public-navbar-actions {
+        margin-top: 1rem;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .public-navbar-actions .btn {
+        width: 100%;
+    }
+
+    .public-nav-links {
+        margin-top: 1rem;
+    }
+}
