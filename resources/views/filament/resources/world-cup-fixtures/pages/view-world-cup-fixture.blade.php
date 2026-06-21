@@ -27,6 +27,106 @@
     $awayInitial = mb_substr($record->away_team_name ?? 'A', 0, 1);
   @endphp
 
+  <script>
+    window.fixtureCountdown = function(config) {
+      return {
+        kickoffAt: config.kickoffAt,
+        isFinished: config.isFinished,
+        label: 'Calculating...',
+        interval: null,
+
+        start() {
+          this.stop();
+          this.tick();
+
+          this.interval = setInterval(() => {
+            this.tick();
+          }, 1000);
+        },
+
+        stop() {
+          if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+          }
+        },
+
+        destroy() {
+          this.stop();
+        },
+
+        tick() {
+          if (!this.kickoffAt) {
+            this.label = '-';
+            this.stop();
+            return;
+          }
+
+          if (this.isFinished) {
+            this.label = 'Final';
+            this.stop();
+            return;
+          }
+
+          const kickoffDate = new Date(this.kickoffAt);
+          const diff = kickoffDate.getTime() - Date.now();
+
+          if (diff <= 0) {
+            this.label = 'Match started';
+            return;
+          }
+
+          this.label = 'Starts in ' + this.format(diff);
+        },
+
+        format(milliseconds) {
+          const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+
+          const days = Math.floor(totalSeconds / 86400);
+          const hours = Math.floor((totalSeconds % 86400) / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const seconds = totalSeconds % 60;
+
+          if (days > 0) {
+            return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+          }
+
+          if (hours > 0) {
+            return `${hours}h ${minutes}m ${seconds}s`;
+          }
+
+          return `${minutes}m ${seconds}s`;
+        },
+      };
+    };
+
+    window.fixtureUserLocalTime = function(kickoffAt) {
+      return {
+        label: 'Detecting your local time...',
+        timezone: 'Detecting timezone...',
+
+        init() {
+          if (!kickoffAt) {
+            this.label = '-';
+            this.timezone = '-';
+            return;
+          }
+
+          this.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Unknown timezone';
+
+          this.label = new Intl.DateTimeFormat(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZoneName: 'short',
+          }).format(new Date(kickoffAt));
+        },
+      };
+    };
+  </script>
+
   <style>
     .wc-page {
       max-width: 1180px;
@@ -480,13 +580,16 @@
             <span class="wc-score-number">{{ $record->away_score }}</span>
           </div>
 
-          <div class="wc-time">
-            <span class="js-user-local-time" data-kickoff-at="{{ $kickoffIso }}">
+          <div wire:key="score-user-local-time-{{ $record->id }}-{{ $record->updated_at?->timestamp }}" class="wc-time" x-data="fixtureUserLocalTime(@js($kickoffIso))" x-init="init()">
+            <span x-text="label">
               Detecting your timezone...
             </span>
           </div>
 
-          <div class="wc-countdown js-fixture-countdown" data-kickoff-at="{{ $kickoffIso }}" data-is-finished="{{ $record->is_finished ? '1' : '0' }}">
+          <div wire:key="score-countdown-{{ $record->id }}-{{ $record->updated_at?->timestamp }}-{{ (int) $record->is_finished }}" class="wc-countdown" x-data="fixtureCountdown({
+              kickoffAt: @js($kickoffIso),
+              isFinished: @js($record->is_finished),
+          })" x-init="start()" x-text="label">
             Calculating countdown...
           </div>
         </div>
@@ -624,6 +727,7 @@
               <div class="wc-info-value">
                 {{ $localStartAt?->format('M d, Y') ?? '-' }}<br>
                 {{ $localStartAt?->format('h:i A T') ?? '-' }}
+
                 <div class="wc-muted">
                   {{ $record->timezone }}
                 </div>
@@ -638,23 +742,24 @@
               </div>
             </div>
 
-            <div class="wc-time-card wc-user-time-card">
+            <div wire:key="user-local-time-{{ $record->id }}-{{ $record->updated_at?->timestamp }}" class="wc-time-card wc-user-time-card" x-data="fixtureUserLocalTime(@js($kickoffIso))" x-init="init()">
               <div class="wc-info-label">Your Local</div>
               <div class="wc-info-value">
-                <span class="js-user-local-time" data-kickoff-at="{{ $kickoffIso }}">
-                  Detecting your timezone...
-                </span>
+                <span x-text="label">Detecting your local time...</span>
 
-                <div class="wc-muted js-user-timezone">
+                <div class="wc-muted" x-text="timezone">
                   Detecting timezone...
                 </div>
               </div>
             </div>
 
-            <div class="wc-time-card wc-countdown-card">
+            <div wire:key="kickoff-countdown-{{ $record->id }}-{{ $record->updated_at?->timestamp }}-{{ (int) $record->is_finished }}" class="wc-time-card wc-countdown-card" x-data="fixtureCountdown({
+                kickoffAt: @js($kickoffIso),
+                isFinished: @js($record->is_finished),
+            })" x-init="start()">
               <div class="wc-info-label">Countdown</div>
-              <div class="wc-info-value js-fixture-countdown" data-kickoff-at="{{ $kickoffIso }}" data-is-finished="{{ $record->is_finished ? '1' : '0' }}">
-                Calculating countdown...
+              <div class="wc-info-value" x-text="label">
+                Calculating...
               </div>
             </div>
           </div>
@@ -669,85 +774,4 @@
       </div>
     </section>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Unknown timezone';
-
-      document.querySelectorAll('.js-user-timezone').forEach(function(element) {
-        element.textContent = userTimezone;
-      });
-
-      document.querySelectorAll('.js-user-local-time').forEach(function(element) {
-        const kickoffAt = element.dataset.kickoffAt;
-
-        if (!kickoffAt) {
-          element.textContent = '-';
-          return;
-        }
-
-        const kickoffDate = new Date(kickoffAt);
-
-        element.innerHTML = new Intl.DateTimeFormat(undefined, {
-          year: 'numeric',
-          month: 'short',
-          day: '2-digit',
-          hour: 'numeric',
-          minute: '2-digit',
-          timeZoneName: 'short',
-        }).format(kickoffDate);
-      });
-
-      function formatCountdown(milliseconds) {
-        const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
-
-        const days = Math.floor(totalSeconds / 86400);
-        const hours = Math.floor((totalSeconds % 86400) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        if (days > 0) {
-          return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        if (hours > 0) {
-          return `${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        return `${minutes}m ${seconds}s`;
-      }
-
-      function updateCountdowns() {
-        document.querySelectorAll('.js-fixture-countdown').forEach(function(element) {
-          const kickoffAt = element.dataset.kickoffAt;
-          const isFinished = element.dataset.isFinished === '1';
-
-          if (!kickoffAt) {
-            element.textContent = '-';
-            return;
-          }
-
-          if (isFinished) {
-            element.textContent = 'Final';
-            return;
-          }
-
-          const kickoffDate = new Date(kickoffAt);
-          const now = new Date();
-          const diff = kickoffDate.getTime() - now.getTime();
-
-          if (diff <= 0) {
-            element.textContent = 'Match started';
-            return;
-          }
-
-          element.textContent = `Starts in ${formatCountdown(diff)}`;
-        });
-      }
-
-      updateCountdowns();
-
-      setInterval(updateCountdowns, 1000);
-    });
-  </script>
 </x-filament-panels::page>
