@@ -12,7 +12,7 @@ class GiveawayParticipantController extends Controller
     {
         $giveaway->load('user', 'participants');
 
-        return view('public.participate', [
+        return view('giveaway.show', [
             'giveaway' => $giveaway,
         ]);
     }
@@ -44,5 +44,3 @@ class GiveawayParticipantController extends Controller
         return back()->with('success', 'Successfully registered for the giveaway! Good luck!');
     }
 }
-
-

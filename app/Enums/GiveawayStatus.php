@@ -11,11 +11,16 @@ enum GiveawayStatus: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::DRAFT => 'Draft',
             self::ACTIVE => 'Active',
             self::CLOSED => 'Closed',
             self::WINNERS_SELECTED => 'Winners Selected',
         };
+    }
+
+    public function isActive(): true
+    {
+        return self::ACTIVE === $this::ACTIVE;
     }
 }

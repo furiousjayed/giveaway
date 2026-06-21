@@ -66,9 +66,18 @@ class Giveaway extends Model
         return $this->getParticipantCount() >= $this->max_participants;
     }
 
-    public function isActive(): bool
+    public function canJoin(): bool
     {
-        return $this->status === GiveawayStatus::ACTIVE;
+        return !$this->isFull() && $this->status->isActive() && $this->hasStarted();
+    }
+
+    public function hasEnded(): bool
+    {
+        return $this->ends_at !== null && now()->gte($this->ends_at);
+    }
+
+    public function hasStarted(): bool
+    {
+        return $this->starts_at !== null && now()->gte($this->starts_at);
     }
 }
-
