@@ -54,7 +54,7 @@ class ViewWorldCupFixture extends ViewRecord
                     }
 
                     $game = $game->json(['game']);
-                    dd($game);
+
                     if (! $game) {
                         Notification::make()
                             ->title('Match not found')
