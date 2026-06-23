@@ -51,11 +51,9 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->index('stadium_api_id');
             $table->index('group_code');
             $table->index('matchday');
             $table->index('match_type');
-            $table->index('utc_kickoff_at');
             $table->index('is_finished');
             $table->index('is_stream_enabled');
         });

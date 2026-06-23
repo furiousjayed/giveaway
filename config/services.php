@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'discord_bot' => [
+        'api_token' => env('DISCORD_BOT_API_TOKEN'),
+    ],
+
 ];

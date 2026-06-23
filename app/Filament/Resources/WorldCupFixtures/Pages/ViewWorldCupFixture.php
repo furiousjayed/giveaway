@@ -32,7 +32,15 @@ class ViewWorldCupFixture extends ViewRecord
                 ->modalDescription(fn(): string => "This will fetch the latest result for {$this->record->home_team_name} vs {$this->record->away_team_name} and update the database.")
                 ->modalSubmitActionLabel('Yes, refresh result')
                 ->action(function (): void {
-                    $game = Http::timeout(15)
+                    $game = Http::retry(3, 500)
+                        ->timeout(30)
+                        ->connectTimeout(10)
+                        ->withOptions([
+                            'curl' => [
+                                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+                            ],
+                        ])
                         ->get("https://worldcup26.ir/get/game/{$this->record->api_match_id}");
 
                     if (! $game->successful()) {
@@ -46,7 +54,7 @@ class ViewWorldCupFixture extends ViewRecord
                     }
 
                     $game = $game->json(['game']);
-
+                    dd($game);
                     if (! $game) {
                         Notification::make()
                             ->title('Match not found')
