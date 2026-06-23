@@ -43,4 +43,14 @@ class GiveawayParticipantController extends Controller
 
         return back()->with('success', 'Successfully registered for the giveaway! Good luck!');
     }
+
+    public function terms()
+    {
+        return view('pages.terms');
+    }
+
+    public function privacy()
+    {
+        return view('pages.privacy');
+    }
 }
