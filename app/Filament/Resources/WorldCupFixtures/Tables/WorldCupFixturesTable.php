@@ -34,7 +34,8 @@ class WorldCupFixturesTable
                     ->searchable(),
 
                 TextColumn::make('start_at')
-                    ->dateTime()
+                    ->timezone('America/Toronto')
+                    ->dateTime('M j, Y h:i A')
                     ->sortable(),
 
                 TextColumn::make('group_code')
