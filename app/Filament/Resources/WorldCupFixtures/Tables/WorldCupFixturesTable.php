@@ -55,10 +55,14 @@ class WorldCupFixturesTable
                 IconColumn::make('is_stream_enabled')
                     ->boolean(),
             ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->isFinished(false);
+            })
+            ->defaultSort('start_at')
             ->filters([
                 TernaryFilter::make('is_stream_enabled')
                     ->label('Steam Enabled'),
-                TernaryFilter::make('is_finished'),
+                // TernaryFilter::make('is_finished'),
                 SelectFilter::make('group_code')
                     ->label('Group')
                     ->options(

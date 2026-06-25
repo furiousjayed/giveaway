@@ -62,4 +62,9 @@ class WorldCupFixture extends Model
     {
         return $query->where('is_stream_enabled', true);
     }
+
+    public function scopeIsFinished(Builder $query, $isFinished = true): Builder
+    {
+        return $query->where('is_finished', $isFinished);
+    }
 }
