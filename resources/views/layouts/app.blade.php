@@ -95,7 +95,7 @@
                 Dashboard
               </a>
 
-              <a href="#" class="btn btn-app-link">
+              <a href="{{ route('filament.admin.auth.login') }}" class="btn btn-app-link">
                 Login
               </a>
 
